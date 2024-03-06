@@ -8,7 +8,7 @@ structure Date where
   day : Day
   month : Month
   year : Year
-  isValid : Prop := match month with
+  isValid : match month with
     | Month.january => day ≤ 31
     | Month.february => match year.leap with
       | true => day ≤ 29
@@ -49,12 +49,16 @@ def Date.fromInt (n : Int) : Date := Id.run do
       break
   n := n - month.daysPassed year.leap
   day := n.toNat
-  pure { day := day, month := month, year := year }
+  pure {
+    day := day,
+    month := month,
+    year := year,
+    isValid := by
+      sorry
+  }
 
 instance : ToString Date where
   toString d := s!"{d.day} {d.month} {d.year}"
-
-#eval toString ( { day := 31, month := Month.december, year := 2020, isValid := true } : Date )
 
 instance : Repr Date where
   reprPrec d _ := toString d
@@ -73,8 +77,6 @@ instance : HAdd Date Month Date where
 
 instance : HSub Date Month Date where
   hSub d n := Date.fromInt (d.toInt - n.daysPassed d.year.leap)
-
--- #eval ( { day := 31, month := Month.december, year := 2020, isValid := true } : Date ) + 1
 
 -- #eval Date.fromInt 335
 -- #eval Date.fromInt 365
