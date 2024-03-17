@@ -54,7 +54,15 @@ def Date.fromInt (n : Int) : Date := Id.run do
     month := month,
     year := year,
     isValid := by
-      sorry
+      match month with
+      | Month.january => {
+        simp
+        cases Year.leap year with
+        | true => sorry
+        | false => sorry
+      }
+      | Month.february => sorry
+      | _ => sorry
   }
 
 instance : ToString Date where
@@ -78,7 +86,48 @@ instance : HAdd Date Month Date where
 instance : HSub Date Month Date where
   hSub d n := Date.fromInt (d.toInt - n.daysPassed d.year.leap)
 
+instance : HAdd Date Year Date where
+  hAdd d y := {
+    day := d.day,
+    month := d.month,
+    year := d.year + y,
+    isValid := sorry
+  };
+
+instance : HSub Date Year Date where
+  hSub d y := {
+    day := d.day,
+    month := d.month,
+    year := d.year - y,
+    isValid := sorry
+  };
+
+-- #eval ({year := 2000, day := 4, month := Month.april, isValid := sorry} : Date) - (10 : Year)
 -- #eval Date.fromInt 335
 -- #eval Date.fromInt 365
+
+/--
+Get the current number of days since 1 January 0.
+-/
+def Date.currentDaysPassed : IO Int := do
+  let system ← IO.getEnv "OS"
+  if system == "Windows_NT" then
+    -- TODO: implement this for Windows
+    return 0
+  else
+    -- 1. get the number of days since 1 January 0000
+    let cmd ← String.trim <$> IO.Process.run {
+      cmd := "bash",
+      args := #["-c", "echo $(( ($(date +%s) / 86400) + 719528 )) "]
+    }
+    -- 2. because we start counting from 0 January 0000, we need to add a day
+    return ( cmd.toNat! + 1)
+
+/--
+Get the current date.
+-/
+def Date.now : IO Date := do
+  let n ← Date.currentDaysPassed
+  return Date.fromInt n
 
 end Leandate

@@ -13,5 +13,9 @@ require std from git "https://github.com/quoteme/leandate" @ "mastemaster
 ## Usage
 
 ```lean
+import «Leandate».Composits.DateTime
+
 #eval ( { day := 31, month := Month.december, year := 2020 } : Date ) + ( 1 : Day ) + (( 3 : Fin 12 ) : Month)
+
+#eval DateTime.now -- 17 March 2024 12:34:47
 ```
