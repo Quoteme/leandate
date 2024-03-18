@@ -13,7 +13,7 @@ require std from git "https://github.com/quoteme/leandate" @ "mastemaster
 ## Usage
 
 ```lean
-import «Leandate».Composits.DateTime
+import «Leandate».Composites.DateTime
 
 #eval ( { day := 31, month := Month.december, year := 2020 } : Date ) + ( 1 : Day ) + (( 3 : Fin 12 ) : Month)
 

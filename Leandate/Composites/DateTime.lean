@@ -1,5 +1,5 @@
-import «Leandate».Composits.Date
-import «Leandate».Composits.Time
+import «Leandate».Composites.Date
+import «Leandate».Composites.Time
 
 namespace Leandate
 
