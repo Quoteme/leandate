@@ -1,3 +1,5 @@
+import Mathlib.Data.List.Range
+
 namespace Leandate
 
 inductive Month : Type where
@@ -105,10 +107,17 @@ def Month.daysInMonth (m : Month) (isLeapYear : Bool) : Nat := match m with
   | Month.december => 31
 
 /--
+Given a month, return a list of all the months that have passed in the year until that month.
+-/
+def Month.passedMonths (m : Month) : List Month :=
+  List.finRange 12 |> List.take (m : Nat)
+
+/--
 Given a month, returns the number of days that must have already passed in the year until the first of that month.
 -/
 def Month.daysPassed (m : Month) (isLeapYear : Bool) : Nat :=
-  Nat.fold (λ n acc ↦ acc + ( (((n + 1) : Nat) : Option Month) <&> ( λ x ↦ x.daysInMonth isLeapYear ) ).getD 0) m 0
+  m.passedMonths.map (λ m ↦ m.daysInMonth isLeapYear) |> List.sum
+  -- Nat.fold (λ n acc ↦ acc + ( (((n + 1) : Nat) : Option Month) <&> ( λ x ↦ x.daysInMonth isLeapYear ) ).getD 0) m 0
 
 #eval Month.january.daysPassed false
 #eval Month.february.daysPassed false

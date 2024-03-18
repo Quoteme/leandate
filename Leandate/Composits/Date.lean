@@ -28,21 +28,26 @@ def Date.toInt (d : Date) : Int :=
   365 * d.year.nonLeapYears + 366 * d.year.leapYears + d.day + (d.month.daysPassed d.year.leap)
 
 /--
-Convert an integer to a date. The integer is the number of days since 1 January 0.
+Convert an integer `n` to a date.
+`n` is the number of days since 1 January 0.
 -/
 def Date.fromInt (n : Int) : Date := Id.run do
   let mut n := n
   let mut year : Year := 0
   let mut month := Month.january
   let mut day := 0
+  -- 1. calculate how many years have passed
+  -- 1.1. if `n` is negative, we subtract years until `n` is positive
   while n < 0 do
     if n < 0 then
       year := year - 1
       n := n + if year.leap then 366 else 365
+  -- 1.2. decrease `n` by one years worth of days, until it is less than a year
   while n > 365 do
     if n > 365 then
       year := year + 1
       n := n - if year.leap then 366 else 365
+  -- 2. calculate how many months have passed
   while n > month.succ.daysPassed year.leap do
     month := month.succ
     if month = Month.december then
@@ -54,6 +59,7 @@ def Date.fromInt (n : Int) : Date := Id.run do
     month := month,
     year := year,
     isValid := by
+      -- TODO: finish this proof
       match month with
       | Month.january => {
         simp
